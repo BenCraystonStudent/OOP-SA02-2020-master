@@ -21,10 +21,10 @@ public:
 	long readData();
 	long sampleCount(long duration) ;
 	long sampleTotal();
-	void clearSamples() { };
+	void clearSamples();
 	long maximumDuration(int) { return -1; };
 	double averageDuration(int) { return -1; };
-	long getDuration(int) { return -1; };
+	long getDuration(int timeOfSample);
 	// 1st
 	double averageDuration(long startTime, long endTime) { return -1.0; }
 	long maximumDuration(int, int) { return -1; };
@@ -83,21 +83,30 @@ long Statistics::readData()
 
 long Statistics::sampleCount(long duration)		//added 09/12/2020
 {
-	Bus BusSample;
-	std::vector<int> Samples;
+	long Samples = 0;
 	long endTime = _timer->time();
 	long startTime = endTime - duration;		//takes duration as defined value from user
 	for (Bus const& currentBusItem : Busses)
 	{
 		if (currentBusItem.depart >= startTime && currentBusItem.depart <= endTime)
 			{
-				Samples.push_back(1);
+			Samples++;
 			}
 	}
-	return Samples.size();
+	return Samples;
 }
 
 long Statistics::sampleTotal()
 {
 	return Busses.size();
+}
+
+void Statistics::clearSamples()
+{
+	Busses.clear();
+}
+
+long Statistics::getDuration(int timeofSample)
+{
+	Bus BusSample;
 }
