@@ -12,6 +12,7 @@ private:
 	std::shared_ptr<IBusReader> _stationData;
 	std::shared_ptr<ITimer> _timer;
 	std::vector<Bus> Busses;
+	bool timeValid(unsigned long time);
 
 public:
 	Statistics(const std::shared_ptr<IBusReader>& reader, const std::shared_ptr<ITimer>& timer);
@@ -75,6 +76,11 @@ long Statistics::readData()
 		throw std::runtime_error("Things went really bad when reading Bus data!");
 	}
 
+	if (BusSample.depart > 86400)
+	{
+		throw std::out_of_range("Sample out of range");
+	}
+
 
 	Busses.push_back(BusSample);				//added 08/12/2020
 
@@ -108,15 +114,19 @@ void Statistics::clearSamples()
 
 long Statistics::getDuration(int timeofSample)
 {
-	for (Bus const& currentBusItem : Busses)
-	{
-		if (timeofSample == currentBusItem.depart)
+		for (Bus const& currentBusItem : Busses)
 		{
-			return (currentBusItem.depart - currentBusItem.arrive);
+			if (timeofSample == currentBusItem.depart)
+			{
+				return (currentBusItem.depart - currentBusItem.arrive);
+			}
 		}
+
 		if (timeofSample > 86400)
 		{
 			throw std::out_of_range("Sample out of range");
 		}
-	}
+
+		throw std::invalid_argument("No argument given");
+
 }
