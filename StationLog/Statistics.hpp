@@ -108,5 +108,15 @@ void Statistics::clearSamples()
 
 long Statistics::getDuration(int timeofSample)
 {
-	Bus BusSample;
+	for (Bus const& currentBusItem : Busses)
+	{
+		if (timeofSample == currentBusItem.depart)
+		{
+			return (currentBusItem.depart - currentBusItem.arrive);
+		}
+		if (timeofSample > 86400)
+		{
+			throw std::out_of_range("Sample out of range");
+		}
+	}
 }
