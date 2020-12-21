@@ -12,7 +12,6 @@ private:
 	std::shared_ptr<IBusReader> _stationData;
 	std::shared_ptr<ITimer> _timer;
 	std::vector<Bus> Busses;
-	bool timeValid(unsigned long time);
 
 public:
 	Statistics(const std::shared_ptr<IBusReader>& reader, const std::shared_ptr<ITimer>& timer);
@@ -74,11 +73,6 @@ long Statistics::readData()
 	catch (...)
 	{
 		throw std::runtime_error("Things went really bad when reading Bus data!");
-	}
-
-	if (BusSample.depart > 86400)
-	{
-		throw std::out_of_range("Sample out of range");
 	}
 
 
