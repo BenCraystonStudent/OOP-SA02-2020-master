@@ -22,11 +22,11 @@ public:
 	long sampleCount(long duration) ;
 	long sampleTotal();
 	void clearSamples();
-	long maximumDuration(int) { return -1; };
-	double averageDuration(int);
+	long maximumDuration(long);
+	double averageDuration(long);
 	long getDuration(int timeOfSample);
 	// 1st
-	double averageDuration(long startTime, long endTime) { return -1.0; }
+	double averageDuration(long startTime, long endTime) { return -1.0; };
 	long maximumDuration(int, int) { return -1; };
 	long minimumDuration(int, int) { return -1; };
 	double averagePassengersBus(const char[7]) { return -1; };
@@ -57,11 +57,12 @@ long Statistics::readData()
 
 	long timeOfSample = _timer->time(); 
 
-	
-	try {
+	try 
+	{
 		BusSample = this->_stationData->readData(timeOfSample);
 	}
-	catch (BusException& e) {
+	catch (BusException& e) 
+	{
 		if (e.GetError() == BusError::NoData)
 		{
 			throw std::runtime_error("No Bus data at this time!");
@@ -71,14 +72,11 @@ long Statistics::readData()
 			throw std::runtime_error("Unknown error occurred when reading Bus data!");
 		}
 		
-			
 	}
 	catch (...)
 	{
 		throw std::runtime_error("Things went really bad when reading Bus data!");
 	}
-	
-
 
 	Busses.push_back(BusSample);				//added 08/12/2020
 
@@ -94,7 +92,7 @@ long Statistics::sampleCount(long duration)		//added 09/12/2020
 	{
 		if (currentBusItem.depart >= startTime && currentBusItem.depart <= endTime)
 			{
-			Samples++;
+				Samples++;
 			}
 	}
 	return Samples;
@@ -129,7 +127,7 @@ long Statistics::getDuration(int timeofSample)
 
 }
 
-double Statistics::averageDuration(int duration)
+double Statistics::averageDuration(long duration)
 {
 	double sum = 0;
 	std::vector<Bus>averageBusses;
@@ -154,6 +152,42 @@ double Statistics::averageDuration(int duration)
 	return sum / averageBusses.size();
 
 	
+}
+
+long Statistics::maximumDuration(long duration)
+{
+	long stay = 0;
+	std::vector<Bus>maxBusses;
+	std::vector<long>stays;
+	long endTime = _timer->time();
+	long startTime = endTime - duration;
+
+	for (Bus const& currentBusItem : Busses)
+	{
+		if (currentBusItem.depart >= startTime && currentBusItem.depart <= endTime)
+		{
+			maxBusses.push_back(currentBusItem);
+		}
+	}
+
+	for (Bus const& currentBusItem : maxBusses)
+	{
+		stays.push_back(currentBusItem.depart - currentBusItem.arrive);
+	}
+
+	for (std::size_t index = 0; index < stays.size(); index++)
+	{
+		if (stay < stays[index])
+		{
+			stay = stays[index];
+		}
+	}
+
+	if (maxBusses.empty())
+	{
+		throw std::invalid_argument("No samples were found!");
+	}
+	return stay;
 }
 
 
