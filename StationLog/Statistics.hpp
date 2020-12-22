@@ -135,6 +135,7 @@ double Statistics::averageDuration(int duration)
 	std::vector<Bus>averageBusses;
 	long endTime = _timer->time();
 	long startTime = endTime - duration;
+	
 	for (Bus const& currentBusItem : Busses)
 	{
 		if (currentBusItem.depart >= startTime && currentBusItem.depart <= endTime)
@@ -146,9 +147,13 @@ double Statistics::averageDuration(int duration)
 	{
 		sum += currentBusItem.depart - currentBusItem.arrive;
 	}
+	if (averageBusses.empty())
+	{
+		throw std::invalid_argument("No samples!");
+	}
 	return sum / averageBusses.size();
 
-
+	
 }
 
 
