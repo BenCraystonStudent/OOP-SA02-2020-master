@@ -23,7 +23,7 @@ public:
 	long sampleTotal();
 	void clearSamples();
 	long maximumDuration(int) { return -1; };
-	double averageDuration(int) { return -1; };
+	double averageDuration(int);
 	long getDuration(int timeOfSample);
 	// 1st
 	double averageDuration(long startTime, long endTime) { return -1.0; }
@@ -50,11 +50,13 @@ Statistics::~Statistics()
 {
 }
 
+
 long Statistics::readData() 
 {
 	Bus BusSample;
 
 	long timeOfSample = _timer->time(); 
+
 	
 	try {
 		BusSample = this->_stationData->readData(timeOfSample);
@@ -68,12 +70,14 @@ long Statistics::readData()
 		{
 			throw std::runtime_error("Unknown error occurred when reading Bus data!");
 		}
+		
 			
 	}
 	catch (...)
 	{
 		throw std::runtime_error("Things went really bad when reading Bus data!");
 	}
+	
 
 
 	Busses.push_back(BusSample);				//added 08/12/2020
@@ -124,3 +128,27 @@ long Statistics::getDuration(int timeofSample)
 		throw std::invalid_argument("No argument given");
 
 }
+
+double Statistics::averageDuration(int duration)
+{
+	double sum = 0;
+	std::vector<Bus>averageBusses;
+	long endTime = _timer->time();
+	long startTime = endTime - duration;
+	for (Bus const& currentBusItem : Busses)
+	{
+		if (currentBusItem.depart >= startTime && currentBusItem.depart <= endTime)
+		{
+			averageBusses.push_back(currentBusItem);
+		}
+	}
+	for (Bus const& currentBusItem : averageBusses)
+	{
+		sum += currentBusItem.depart - currentBusItem.arrive;
+	}
+	return sum / averageBusses.size();
+
+
+}
+
+
