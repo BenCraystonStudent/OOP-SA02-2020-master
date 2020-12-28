@@ -12,6 +12,7 @@ private:
 	std::shared_ptr<IBusReader> _stationData;
 	std::shared_ptr<ITimer> _timer;
 	std::vector<Bus> Busses;
+	bool timeInRange(long time);
 
 public:
 	Statistics(const std::shared_ptr<IBusReader>& reader, const std::shared_ptr<ITimer>& timer);
@@ -26,11 +27,11 @@ public:
 	double averageDuration(long);
 	long getDuration(int timeOfSample);
 	// 1st
-	double averageDuration(long startTime, long endTime) { return -1.0; };
+	double averageDuration(long startTime, long endTime) { return -1; };
 	long maximumDuration(int, int) { return -1; };
 	long minimumDuration(int, int) { return -1; };
-	double averagePassengersBus(const char[7]) { return -1; };
-	double averagePassengersPlatform(int) { return -1; };
+	double averagePassengersBus(std::string busName);
+	double averagePassengersPlatform(int platformNumber);
 	double averageDurationPlatform(int) { return -1; };
 	
 
@@ -77,7 +78,7 @@ long Statistics::readData()
 	{
 		throw std::runtime_error("Things went really bad when reading Bus data!");
 	}
-
+	
 	Busses.push_back(BusSample);				//added 08/12/2020
 
 	return BusSample.depart;					// Return the second that the sample was taken at.
@@ -188,6 +189,39 @@ long Statistics::maximumDuration(long duration)
 		throw std::invalid_argument("No samples were found!");
 	}
 	return stay;
+}
+
+double Statistics::averagePassengersBus(std::string busName)
+{
+	int counter = 0;
+	double avgPassengers = 0;
+
+	for (Bus const& currentBusItem : Busses)
+	{
+		if (currentBusItem.name == busName)
+		{
+			avgPassengers += currentBusItem.passengers;
+			counter++;
+		}
+	}
+	return avgPassengers / counter;
+
+}
+
+double Statistics::averagePassengersPlatform(int platformNumber)
+{
+	double totalPassengers = 0;
+	int counter = 0;
+
+	for (Bus const& currentBusItem : Busses)
+	{
+		if (currentBusItem.platform == platformNumber)
+		{
+			totalPassengers += currentBusItem.passengers;
+			counter++;
+		}
+	}
+	return totalPassengers / counter;
 }
 
 
