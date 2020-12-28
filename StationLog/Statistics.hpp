@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <iostream>
 #include "IBusReader.h"
 #include "FakeStationData.hpp"
 #include "FakeTimer.hpp"
@@ -12,7 +13,6 @@ private:
 	std::shared_ptr<IBusReader> _stationData;
 	std::shared_ptr<ITimer> _timer;
 	std::vector<Bus> Busses;
-	bool timeInRange(long time);
 
 public:
 	Statistics(const std::shared_ptr<IBusReader>& reader, const std::shared_ptr<ITimer>& timer);
@@ -58,6 +58,11 @@ long Statistics::readData()
 
 	long timeOfSample = _timer->time(); 
 
+	if (timeOfSample > 86400)
+	{
+		throw std::out_of_range("Exceeds 24H");
+	}
+
 	try 
 	{
 		BusSample = this->_stationData->readData(timeOfSample);
@@ -78,6 +83,7 @@ long Statistics::readData()
 	{
 		throw std::runtime_error("Things went really bad when reading Bus data!");
 	}
+
 	
 	Busses.push_back(BusSample);				//added 08/12/2020
 
@@ -212,6 +218,7 @@ double Statistics::averagePassengersPlatform(int platformNumber)
 {
 	double totalPassengers = 0;
 	int counter = 0;
+	bool platformsFound = false;
 
 	for (Bus const& currentBusItem : Busses)
 	{
@@ -219,9 +226,17 @@ double Statistics::averagePassengersPlatform(int platformNumber)
 		{
 			totalPassengers += currentBusItem.passengers;
 			counter++;
+			platformsFound = true;
 		}
 	}
+
+	if (platformsFound = false)
+	{
+		throw std::invalid_argument("Platforms not found");
+	}
+
 	return totalPassengers / counter;
 }
+
 
 
