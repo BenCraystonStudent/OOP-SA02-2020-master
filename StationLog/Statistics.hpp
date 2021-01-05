@@ -13,6 +13,7 @@ private:
 	std::shared_ptr<IBusReader> _stationData;
 	std::shared_ptr<ITimer> _timer;
 	std::vector<Bus> Busses;
+	int hourTracker = 0;
 
 public:
 	Statistics(const std::shared_ptr<IBusReader>& reader, const std::shared_ptr<ITimer>& timer);
@@ -32,7 +33,7 @@ public:
 	long minimumDuration(int, int) { return -1; };
 	double averagePassengersBus(std::string busName);
 	double averagePassengersPlatform(int platformNumber);
-	double averageDurationPlatform(int) { return -1; };
+	double averageDurationPlatform(int platformNumber);
 	
 
 
@@ -54,7 +55,7 @@ Statistics::~Statistics()
 
 long Statistics::readData() 
 {
-	Bus BusSample;
+	Bus BusSample; 
 
 	long timeOfSample = _timer->time(); 
 
@@ -84,10 +85,17 @@ long Statistics::readData()
 		throw std::runtime_error("Things went really bad when reading Bus data!");
 	}
 
+	//if (timeOfSample / 3600 > hourTracker)
+	//{
+	//	Busses.resize()
+	//}
+
+	hourTracker = timeOfSample / (60 * 60);
 	
 	Busses.push_back(BusSample);				//added 08/12/2020
 
 	return BusSample.depart;					// Return the second that the sample was taken at.
+
 };
 
 long Statistics::sampleCount(long duration)		//added 09/12/2020
@@ -230,7 +238,7 @@ double Statistics::averagePassengersPlatform(int platformNumber)
 		}
 	}
 
-	if (platformsFound = false)
+	if (platformsFound == false)
 	{
 		throw std::invalid_argument("Platforms not found");
 	}
@@ -238,5 +246,28 @@ double Statistics::averagePassengersPlatform(int platformNumber)
 	return totalPassengers / counter;
 }
 
+double Statistics::averageDurationPlatform(int platformNumber)
+{
+	double totalTime = 0;
+	int counter = 0;
+	bool platformsFound = false;
+
+	for (Bus const& currentBusItem : Busses)
+	{
+		if (currentBusItem.platform == platformNumber)
+		{
+			totalTime += currentBusItem.depart - currentBusItem.arrive;
+			counter++;
+			platformsFound = true;
+		}
+	}
+
+	if (platformsFound == false)
+	{
+		throw std::invalid_argument("Platforms not found");
+	}
+
+	return totalTime / counter;
+}
 
 
