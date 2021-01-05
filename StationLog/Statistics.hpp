@@ -21,7 +21,7 @@ public:
 
 	// 3rd
 	long readData();
-	long sampleCount(long duration) ;
+	long sampleCount(long duration);
 	long sampleTotal();
 	void clearSamples();
 	long maximumDuration(long);
@@ -64,6 +64,11 @@ long Statistics::readData()
 		throw std::out_of_range("Exceeds 24H");
 	}
 
+	if (timeOfSample <= timeOfSample - 1)
+	{
+		throw std::underflow_error("Underflow error");
+	}
+
 	try 
 	{
 		BusSample = this->_stationData->readData(timeOfSample);
@@ -103,6 +108,12 @@ long Statistics::sampleCount(long duration)		//added 09/12/2020
 	long Samples = 0;
 	long endTime = _timer->time();
 	long startTime = endTime - duration;		//takes duration as defined value from user
+
+	if (endTime > 86400)
+	{
+		throw std::out_of_range("Sample was out of range!");
+	}
+
 	for (Bus const& currentBusItem : Busses)
 	{
 		if (currentBusItem.depart >= startTime && currentBusItem.depart <= endTime)
