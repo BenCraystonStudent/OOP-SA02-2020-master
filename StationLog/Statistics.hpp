@@ -90,12 +90,12 @@ long Statistics::readData()
 		throw std::runtime_error("Things went really bad when reading Bus data!");
 	}
 
-	//if (timeOfSample / 3600 > hourTracker)
-	//{
-	//	Busses.resize()
-	//}
+	hourTracker = timeOfSample / 3600;
 
-	hourTracker = timeOfSample / (60 * 60);
+	if (timeOfSample / 3600 > hourTracker)
+	{
+		Busses.resize(Busses.size()); //??????????????????????????????????????
+	}
 	
 	Busses.push_back(BusSample);				//added 08/12/2020
 
@@ -159,6 +159,11 @@ double Statistics::averageDuration(long duration)
 	std::vector<Bus>averageBusses;
 	long endTime = _timer->time();
 	long startTime = endTime - duration;
+
+	if (duration > 86400)
+	{
+		throw std::out_of_range("Sample was out of range!");
+	}
 	
 	for (Bus const& currentBusItem : Busses)
 	{
@@ -187,6 +192,11 @@ long Statistics::maximumDuration(long duration)
 	std::vector<long>stays;
 	long endTime = _timer->time();
 	long startTime = endTime - duration;
+
+	if (duration > 86400)
+	{
+		throw std::out_of_range("Sample was out of range!");
+	}
 
 	for (Bus const& currentBusItem : Busses)
 	{
