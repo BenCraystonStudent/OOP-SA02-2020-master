@@ -109,7 +109,7 @@ long Statistics::sampleCount(long duration)		//added 09/12/2020
 	long endTime = _timer->time();
 	long startTime = endTime - duration;		//takes duration as defined value from user
 
-	if (endTime > 86400)
+	if (endTime > 86400 || endTime < 0)
 	{
 		throw std::out_of_range("Sample was out of range!");
 	}
