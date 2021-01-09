@@ -13,7 +13,15 @@ private:
 	std::shared_ptr<IBusReader> _stationData;
 	std::shared_ptr<ITimer> _timer;
 	std::vector<Bus> Busses;
-	int hourTracker = 0;
+	int counter = 0;
+	double totalTime = 0;
+	double totalPassengers = 0;
+	double avgPassengers = 0;
+	long stay = 0;
+	std::vector<Bus>maxBusses;
+	std::vector<long>stays;
+	double sum = 0;
+	std::vector<Bus>averageBusses;
 
 public:
 	Statistics(const std::shared_ptr<IBusReader>& reader, const std::shared_ptr<ITimer>& timer);
@@ -90,12 +98,12 @@ long Statistics::readData()
 		throw std::runtime_error("Things went really bad when reading Bus data!");
 	}
 
-	hourTracker = timeOfSample / 3600;
+	//hourTracker = timeOfSample / 3600;
 
-	if (timeOfSample / 3600 > hourTracker)
-	{
-		Busses.resize(Busses.size()); //??????????????????????????????????????
-	}
+	//if (timeOfSample / 3600 > hourTracker)
+	//{
+	//	Busses.resize(Busses.size()); //??????????????????????????????????????
+	//}
 	
 	Busses.push_back(BusSample);				//added 08/12/2020
 
@@ -155,8 +163,6 @@ long Statistics::getDuration(int timeofSample)
 
 double Statistics::averageDuration(long duration)
 {
-	double sum = 0;
-	std::vector<Bus>averageBusses;
 	long endTime = _timer->time();
 	long startTime = endTime - duration;
 
@@ -187,9 +193,6 @@ double Statistics::averageDuration(long duration)
 
 long Statistics::maximumDuration(long duration)
 {
-	long stay = 0;
-	std::vector<Bus>maxBusses;
-	std::vector<long>stays;
 	long endTime = _timer->time();
 	long startTime = endTime - duration;
 
@@ -228,8 +231,6 @@ long Statistics::maximumDuration(long duration)
 
 double Statistics::averagePassengersBus(std::string busName)
 {
-	int counter = 0;
-	double avgPassengers = 0;
 
 	for (Bus const& currentBusItem : Busses)
 	{
@@ -245,8 +246,6 @@ double Statistics::averagePassengersBus(std::string busName)
 
 double Statistics::averagePassengersPlatform(int platformNumber)
 {
-	double totalPassengers = 0;
-	int counter = 0;
 	bool platformsFound = false;
 
 	for (Bus const& currentBusItem : Busses)
@@ -269,8 +268,6 @@ double Statistics::averagePassengersPlatform(int platformNumber)
 
 double Statistics::averageDurationPlatform(int platformNumber)
 {
-	double totalTime = 0;
-	int counter = 0;
 	bool platformsFound = false;
 
 	for (Bus const& currentBusItem : Busses)
