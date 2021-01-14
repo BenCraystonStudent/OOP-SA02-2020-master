@@ -15,9 +15,6 @@ int main()
 	Statistics s(dataReader, dataTimer);
 
 	std::cout << s.readData() << std::endl;
-	std::cout << s.sampleCount(5000) << std::endl;
-
-
 
 	return 0;
 }
