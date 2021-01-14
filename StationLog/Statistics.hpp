@@ -321,7 +321,7 @@ double Statistics::averageDurationPlatform(int platformNumber)
 	}
 
 	//if no platforms are found, throw an invalid argument exception.
-	if (platformsFound = false)
+	if (platformsFound == false)
 	{
 		throw std::invalid_argument("Platforms not found");
 	}
